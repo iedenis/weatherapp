@@ -3,6 +3,8 @@ import WeatherCard from './WeatherCard'
 import { Grid, Typography } from '@material-ui/core';
 export class Favourites extends Component {
     state = {
+        isFailed: false,
+        error: null,
         cities: [],
         citiesForeCasts: []
     }
@@ -23,13 +25,12 @@ export class Favourites extends Component {
 
     fetchWeather = () => {
         this.state.cities.map((city, idx) => {
-            const today_url = `http://dataservice.accuweather.com/forecasts/v1/hourly/1hour/${city.location_key}?apikey=${process.env.REACT_APP_API_KEY}&metric=true`
+            const today_url = `https://dataservice.accuweather.com/forecasts/v1/hourly/1hour/${city.location_key}?apikey=z7csEsZvhMGEGXEnWi2HGjF9ZmJUraI2&metric=true`
             fetch(today_url).then((docs) => docs.json()).then(res => {
                 const { citiesForeCasts } = this.state;
                 citiesForeCasts[idx] = res[0]
                 this.setState({ citiesForeCasts: citiesForeCasts })
-            }
-            )
+            }).catch(err => { this.setState({ isFailed: true, error: err }) })
         })
     }
     componentDidMount() {
@@ -42,30 +43,38 @@ export class Favourites extends Component {
 
     }
     render() {
-        const { cities, citiesForeCasts } = this.state
-        return (
-            <div>
-                {
-                    cities.length === 0 ? <Typography color='primary' variant='h4' style={styles.h4}>No favourite cities added</Typography> :
-                        citiesForeCasts.length !== cities.length ? "Waiting for wather" :
-                            <Grid container>
-                                {cities.map((city, idx) => {
-                                    return <WeatherCard
-                                        removeFromFavourites={this.removeFromFavourites}
-                                        hasButton='true' key={city.location_key}
-                                        city={city.location}
-
-                                        temperature={citiesForeCasts[idx].Temperature.Value}
-                                        description={citiesForeCasts[idx].IconPhrase}
-                                        getIconByDescription={this.props.getIconByDescription}
-                                    >
-                                    </WeatherCard>
-                                })}
-                            </Grid>
-
-                }
+        const { cities, citiesForeCasts, isFailed, error } = this.state
+        if (isFailed)
+            return (<div>
+                <Typography variant='h4'>There was a problem with the weather fetching</Typography>
+                <details style={{ whiteSpace: "pre-wrap" }}>{error.toString()}</details>
             </div>
-        )
+            )
+        else {
+            return (
+                <div>
+                    {
+                        cities.length === 0 ? <Typography color='primary' variant='h4' style={styles.h4}>No favourite cities added</Typography> :
+                            citiesForeCasts.length !== cities.length ? "Waiting for wather" :
+                                <Grid container>
+                                    {cities.map((city, idx) => {
+                                        return <WeatherCard
+                                            removeFromFavourites={this.removeFromFavourites}
+                                            hasButton='true' key={city.location_key}
+                                            city={city.location}
+
+                                            temperature={citiesForeCasts[idx].Temperature.Value}
+                                            description={citiesForeCasts[idx].IconPhrase}
+                                            getIconByDescription={this.props.getIconByDescription}
+                                        >
+                                        </WeatherCard>
+                                    })}
+                                </Grid>
+
+                    }
+                </div>
+            )
+        }
     }
 }
 const styles = {

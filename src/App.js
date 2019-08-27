@@ -10,9 +10,9 @@ import { WeeklyForecast } from './components/layouts/WeeklyForecast';
 import Favourites from './components/layouts/Favourites'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faCloud, faSun, faCloudSun, faCloudShowersHeavy } from '@fortawesome/free-solid-svg-icons';
-
+import { ErrorBoundary } from './components/layouts/ErrorBoundary'
 export class App extends Component {
-  url = `http://dataservice.accuweather.com/forecasts/v1/daily/1day/215854?apikey=${process.env.REACT_APP_API_KEY}=true`;
+  url = `https://dataservice.accuweather.com/forecasts/v1/daily/1day/215854?apikey=z7csEsZvhMGEGXEnWi2HGjF9ZmJUraI2=true`;
   state = {
     favourites: 0,
     location: 'Tel aviv',
@@ -63,11 +63,8 @@ export class App extends Component {
   updating the city from search field
   */
   updateCity = (city) => {
-    console.log('new city: ', city.LocalizedName)
     const name = city.LocalizedName;
     const key = city.Key
-
-    console.log('name is: ', name, ' and key is ', key);
     this.setState({ location: name, location_key: key })
   }
 
@@ -80,7 +77,9 @@ export class App extends Component {
       danger: 'orange',
     },
   });
-
+  componentDidCatch(error, info) {
+    console.log("CATCHED ERROR", error)
+  }
   render() {
     library.add(faCloud, faSun, faCloudSun, faCloudShowersHeavy)
 
@@ -90,7 +89,7 @@ export class App extends Component {
         <MuiThemeProvider theme={this.theme}>
           <Header switcher={this.switchHomeFavourites}></Header>
           <Paper >
-            {this.state.favourites ? <Favourites getIconByDescription={this.getIconByDescription}></Favourites> :
+            {this.state.favourites ? <ErrorBoundary><Favourites getIconByDescription={this.getIconByDescription}></Favourites></ErrorBoundary> :
               <React.Fragment>
 
                 <Paper style={styles.Paper}>
@@ -102,14 +101,22 @@ export class App extends Component {
                         updateCity={this.updateCity}
                       ></Search>
                     </Grid>
+
                     <Grid item xs={6} style={styles.GridItem}>
-                      <TodayForecast
-                        location_key={location_key}
-                        location={location}
-                        getIconByDescription={this.getIconByDescription}
-                      >
-                      </TodayForecast></Grid>
+
+                      <ErrorBoundary>
+                        <TodayForecast
+                          location_key={location_key}
+                          location={location}
+                          getIconByDescription={this.getIconByDescription}
+                        >
+                        </TodayForecast>
+                      </ErrorBoundary>
+
+                    </Grid>
                     <Grid item xs={6} style={styles.GridItem} ><AddToFavourites addToFavourites={this.addToFavouritesClicked} > </AddToFavourites></Grid>
+
+
 
                   </Grid>
 
@@ -117,11 +124,15 @@ export class App extends Component {
 
 
                 <Grid item style={styles.GridItem}>
-                  <WeeklyForecast
-                    city={location}
-                    location_key={location_key}
-                    getIconByDescription={this.getIconByDescription}
-                  ></WeeklyForecast></Grid>
+                  <ErrorBoundary>
+
+                    <WeeklyForecast
+                      city={location}
+                      location_key={location_key}
+                      getIconByDescription={this.getIconByDescription}
+                    ></WeeklyForecast>
+                  </ErrorBoundary>
+                </Grid>
               </React.Fragment>
 
             }
