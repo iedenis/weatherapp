@@ -9,7 +9,7 @@ import TodayForecast from './components/layouts/TodayForecast'
 import { WeeklyForecast } from './components/layouts/WeeklyForecast';
 import Favourites from './components/layouts/Favourites'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCloud, faSun, faCloudSun,faCloudShowersHeavy } from '@fortawesome/free-solid-svg-icons';
+import { faCloud, faSun, faCloudSun, faCloudShowersHeavy } from '@fortawesome/free-solid-svg-icons';
 
 export class App extends Component {
   url = `http://dataservice.accuweather.com/forecasts/v1/daily/1day/215854?apikey=${process.env.REACT_APP_API_KEY}=true`;
@@ -22,14 +22,13 @@ export class App extends Component {
   }
 
   getIconByDescription(description) {
-    console.log('description', description);
     switch (description) {
       case 'Clear': return ['sun', 'orange'];
       case 'Mostly clear': return ['cloud-sun', 'orange'];
       case 'Sunny': return ['sun', 'orange'];
-      case 'Partly sunny': return ['cloud-sun', 'orange'];
-      case 'Showers' : return ['cloud-showers-heavy', '#395877']
-      case 'Intermittent clouds': return ['Intermittent clouds', 'orange']
+      case 'Partly sunny' || 'Mostly sunny': return ['cloud-sun', 'orange'];
+      case 'Showers': return ['cloud-showers-heavy', '#395877']
+      case 'Intermittent clouds': return ['cloud-sun', 'orange']
       default: return ['cloud', '#88c3f1'];
 
     }
@@ -37,7 +36,6 @@ export class App extends Component {
 
 
   addToFavouritesClicked = () => {
-    //console.log('Adding to favourites ', this.state.location);
     let fCities = localStorage.getItem('favouriteCities');
     let arrayOfCities = []
     if (fCities) {
@@ -45,9 +43,6 @@ export class App extends Component {
       if (!fCities.includes(this.state.location)) {
         arrayOfCities.push({ location: this.state.location, location_key: this.state.location_key })
         localStorage.setItem('favouriteCities', JSON.stringify(arrayOfCities))
-      }
-      else {
-        console.log('INCLUDES')
       }
     }
     else {
@@ -94,8 +89,8 @@ export class App extends Component {
       <div className="App">
         <MuiThemeProvider theme={this.theme}>
           <Header switcher={this.switchHomeFavourites}></Header>
-          <Paper>
-            {this.state.favourites ? <Favourites></Favourites> :
+          <Paper >
+            {this.state.favourites ? <Favourites getIconByDescription={this.getIconByDescription}></Favourites> :
               <React.Fragment>
 
                 <Paper style={styles.Paper}>
@@ -111,11 +106,9 @@ export class App extends Component {
                       <TodayForecast
                         location_key={location_key}
                         location={location}
-
                         getIconByDescription={this.getIconByDescription}
                       >
                       </TodayForecast></Grid>
-
                     <Grid item xs={6} style={styles.GridItem} ><AddToFavourites addToFavourites={this.addToFavouritesClicked} > </AddToFavourites></Grid>
 
                   </Grid>
@@ -123,7 +116,7 @@ export class App extends Component {
                 </Paper>
 
 
-                <Grid item lg={2} style={styles.GridItem}>
+                <Grid item style={styles.GridItem}>
                   <WeeklyForecast
                     city={location}
                     location_key={location_key}

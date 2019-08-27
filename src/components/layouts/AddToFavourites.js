@@ -7,7 +7,11 @@ export class AddToFavourites extends Component {
     render() {
         return (
             <div style={styles.container}>
-                <Button onClick={this.props.addToFavourites} color='secondary'> <FontAwesomeIcon style={styles.icon} icon={faHeart} size='2x' /><span style={{marginLeft:'10px'}}>Add to favourites</span></Button>
+                <Button 
+                onClick={this.props.addToFavourites} color='secondary'> 
+                <FontAwesomeIcon style={styles.icon} icon={faHeart} size='2x' />
+                <span style={{ marginLeft: '10px' }}>Add to favourites</span>
+                </Button>
             </div>
         )
     }
@@ -21,9 +25,9 @@ const styles = {
         verticalAlign: 'middle',
         margin: '0 auto'
     },
-    container:{
-        textAlign:'right',
-        marginTop:'10px'
+    container: {
+        textAlign: 'right',
+        marginTop: '10px'
     }
 }
 

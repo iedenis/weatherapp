@@ -8,14 +8,17 @@ export class Favourites extends Component {
     }
 
     removeFromFavourites = (city) => {
-        const { cities } = this.state;
-        //console.log(this.state);
+        const { cities, citiesForeCasts } = this.state;
         const retArray = []
-        cities.forEach(element => {
-            if (element.location !== city) retArray.push(element)
+        const retArrayOfForecasts = []
+        cities.map((element, index) => {
+            if (element.location !== city) {
+                retArray.push(element)
+                retArrayOfForecasts.push(citiesForeCasts[index])
+            }
         })
         localStorage.setItem('favouriteCities', JSON.stringify(retArray))
-        this.setState({ cities: retArray });
+        this.setState({ cities: retArray, citiesForeCasts: retArrayOfForecasts });
     }
 
     fetchWeather = () => {
@@ -24,7 +27,6 @@ export class Favourites extends Component {
             fetch(today_url).then((docs) => docs.json()).then(res => {
                 const { citiesForeCasts } = this.state;
                 citiesForeCasts[idx] = res[0]
-                //console.log("RESPONSE", res)
                 this.setState({ citiesForeCasts: citiesForeCasts })
             }
             )
@@ -40,24 +42,25 @@ export class Favourites extends Component {
 
     }
     render() {
-        //console.log('Favourite cities', this.state.cities)
         const { cities, citiesForeCasts } = this.state
-        console.log('forecasts',citiesForeCasts)
-       
         return (
             <div>
                 {
                     cities.length === 0 ? <Typography color='primary' variant='h4' style={styles.h4}>No favourite cities added</Typography> :
-                        citiesForeCasts.length === 0 ? "Waiting for wather" :
+                        citiesForeCasts.length !== cities.length ? "Waiting for wather" :
                             <Grid container>
-                                {cities.map((city, idx) => <WeatherCard
-                                    removeFromFavourites={this.removeFromFavourites}
-                                    hasButton='true' key={city.location_key}
-                                    city={city.location}
-                                    temperature={citiesForeCasts[idx].Temperature.Value}
-                                    description={citiesForeCasts[idx].IconPhrase}
-                                >
-                                </WeatherCard>)}
+                                {cities.map((city, idx) => {
+                                    return <WeatherCard
+                                        removeFromFavourites={this.removeFromFavourites}
+                                        hasButton='true' key={city.location_key}
+                                        city={city.location}
+
+                                        temperature={citiesForeCasts[idx].Temperature.Value}
+                                        description={citiesForeCasts[idx].IconPhrase}
+                                        getIconByDescription={this.props.getIconByDescription}
+                                    >
+                                    </WeatherCard>
+                                })}
                             </Grid>
 
                 }

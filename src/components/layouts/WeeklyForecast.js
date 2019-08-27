@@ -11,13 +11,13 @@ export class WeeklyForecast extends Component {
 
     getWeatherByKey = (key) => {
         const url = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${key}?apikey=${process.env.REACT_APP_API_KEY}&metric=true`
-        fetch(url).then(docs => docs.json()).then(res => this.setState({ dailyForeCasts: res.DailyForecasts }), console.log(this.state.dailyForeCasts))
+        fetch(url).then(docs => docs.json()).then(res => this.setState({ dailyForeCasts: res.DailyForecasts }))
     }
     componentDidMount() {
         this.getWeatherByKey(this.props.location_key)
     }
     componentDidUpdate(prevProps) {
-        console.log(this.props)
+       // console.log(this.props)
         if (prevProps !== this.props) {
             this.getWeatherByKey(this.props.location_key)
         }
@@ -27,7 +27,7 @@ export class WeeklyForecast extends Component {
         const days = [];
         var firstDay
         const { dailyForeCasts } = this.state
-        console.log(dailyForeCasts);
+        //console.log(dailyForeCasts);
         if (this.state.dailyForeCasts.length !== 0) {
             firstDay = new Date(dailyForeCasts[0].Date).getUTCDay()
             // console.log(firstDay);

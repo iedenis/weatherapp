@@ -2,10 +2,8 @@ import React from 'react'
 import { Card, CardActionArea, CardContent, Typography, CardActions, Button } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const WeatherCard = ({ minTemp, maxTemp, temperature, description, dayOfTheWeek, city, hasButton, removeFromFavourites, isDaily, getIconByDescription }) => {
+const WeatherCard = ({ fIcon, minTemp, maxTemp, temperature, description, dayOfTheWeek, city, hasButton, removeFromFavourites, isDaily, getIconByDescription }) => {
     const icon = getIconByDescription(description)
-    console.log("description", description);
-    console.log(icon[1])
     return (
         <Card style={styles.card}>
             <CardActionArea>
@@ -35,10 +33,11 @@ const WeatherCard = ({ minTemp, maxTemp, temperature, description, dayOfTheWeek,
     )
 }
 const styles = {
-    
+
     card: {
         maxWidth: 170,
-        marginBottom: '10px'
+        marginBottom: '10px',
+        marginLeft: '10px'
     },
     media: {
     },
